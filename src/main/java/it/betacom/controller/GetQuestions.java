@@ -1,5 +1,6 @@
 package it.betacom.controller;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -24,22 +25,24 @@ import it.betacom.connection.Database;
 @WebServlet("/GetQuestions")
 public class GetQuestions extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
-    public GetQuestions() {
-        super();
-        // TODO Auto-generated constructor stub
-    }
 
 	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
+	 * @see HttpServlet#HttpServlet()
 	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+	public GetQuestions() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+	/**
+	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse
+	 *      response)
+	 */
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
 		response.setHeader("Access-Control-Allow-Origin", "*");
-	    response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-	    response.setHeader("Access-Control-Allow-Headers", "x-requested-with, Content-Type");
+		response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+		response.setHeader("Access-Control-Allow-Headers", "x-requested-with, Content-Type");
 		JSONArray jsonArray = new JSONArray();
 		try {
 			Connection con = Database.getConnection();
@@ -61,22 +64,41 @@ public class GetQuestions extends HttpServlet {
 				jsonArray.put(jsonObject);
 			}
 			System.out.println(jsonArray.toString());
-			
+
 			response.setContentType("application/json");
 			response.getWriter().write(jsonArray.toString());
 
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-	
+
 	}
 
 	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
+	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse
+	 *      response)
 	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		doGet(request, response);
+	protected void doPost(HttpServletRequest request, HttpServletResponse response)
+			throws ServletException, IOException {
+		response.setHeader("Access-Control-Allow-Origin", "*");
+		response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+		response.setHeader("Access-Control-Allow-Headers", "x-requested-with, Content-Type");
+		try {
+			Connection con = Database.getConnection();
+			 String sql = "insert into questions (question_text, time_selected) values (?, 0)";
+	            
+	            try (PreparedStatement ps = con.prepareStatement(sql)) {
+	                ps.setString(1, request.getParameter("question"));
+	                
+	                int rowsAffected = ps.executeUpdate(); 
+	                if(rowsAffected <= 0) {
+	                    // Handle the case where no rows were affected
+	                }
+	            }
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		
 	}
-
 }
