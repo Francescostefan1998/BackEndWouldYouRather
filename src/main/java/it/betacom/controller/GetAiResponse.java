@@ -96,7 +96,7 @@ public class GetAiResponse extends HttpServlet {
 		String question = jsonObject.getString("question");
 
 		Request request = new Request.Builder().url(URL).post(RequestBody.create(createRequestBody(
-				"give me a 'would you rather' type of question without starting with 'would you rather', and separate the 2 choices with a '/' symbol (the two choices must always be present, don't advance singular question, also the '/' symbol must always be present in between, ). Make them quite endgy, not question mark, not longher than 30 words, oddly specific, and challenging to respond to.  must be written in " + questionLanguageParam),
+				"Provide a 'would you rather' style choice in the format: [choice 1] / [choice 2]. Both choices must be present, and separated by a '/' symbol. Avoid introductory phrases or explanations; I need only the two choices. Ensure the total word count for both choices combined is less than 70 words. The options should be specific, edgy, and challenging to answer. Do not use a question mark. Generate the choice in " + questionLanguageParam),
 				JSON)).addHeader("Content-Type", "application/json")
 				.addHeader("Authorization", "Bearer " + OPENAI_API_KEY).build();
 
