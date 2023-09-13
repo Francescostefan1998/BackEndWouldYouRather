@@ -83,6 +83,8 @@ public class GetAiResponse extends HttpServlet {
 
 		StringBuilder sb = new StringBuilder();
 		String line;
+		String questionLanguageParam = req.getParameter("language");
+        if(questionLanguageParam != null) {
 
 		try (BufferedReader reader = req.getReader()) {
 			while ((line = reader.readLine()) != null) {
@@ -94,12 +96,12 @@ public class GetAiResponse extends HttpServlet {
 		String question = jsonObject.getString("question");
 
 		Request request = new Request.Builder().url(URL).post(RequestBody.create(createRequestBody(
-				"give me a 'would you rather' type of question without starting with 'would you rather', and separate the 2 choices with a '/' symbol (the two choices must always be present, don't advance singular question, also the '/' symbol must always be present in between, ). Make them quite endgy, not question mark, not longher than 30 words, oddly specific, and challenging to respond to."),
+				"give me a 'would you rather' type of question without starting with 'would you rather', and separate the 2 choices with a '/' symbol (the two choices must always be present, don't advance singular question, also the '/' symbol must always be present in between, ). Make them quite endgy, not question mark, not longher than 30 words, oddly specific, and challenging to respond to.  must be written in " + questionLanguageParam),
 				JSON)).addHeader("Content-Type", "application/json")
 				.addHeader("Authorization", "Bearer " + OPENAI_API_KEY).build();
 
 		Response response = client.newCall(request).execute();
-
+        
 		if (response.isSuccessful() && response.body() != null) {
 			String responseBody = response.body().string();
 			JSONObject responseObject = new JSONObject(responseBody);
@@ -129,7 +131,10 @@ public class GetAiResponse extends HttpServlet {
 			
 		} else {
 			resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error querying OpenAI");
-		}
+		}} else {
+			resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "You must provide the language param");
+
+        }
 	}
 
 	private String cleanResponse(String response) {
